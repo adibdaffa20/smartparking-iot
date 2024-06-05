@@ -1,94 +1,151 @@
-import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context';
-import {Bars3CenterLeftIcon, MagnifyingGlassIcon} from 'react-native-heroicons/outline'
-import TrendingMovies from '../components/trendingMovies';
-import MovieList from '../components/movieList';
-import { StatusBar } from 'expo-status-bar';
-import { fetchTopRatedMovies, fetchTrendingMovies, fetchUpcomingMovies } from '../api/moviedb';
-import { useNavigation } from '@react-navigation/native';
-import Loading from '../components/loading';
-import { styles } from '../theme';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StatusBar,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const ios = Platform.OS === 'ios';
+const colors = {
+  themeColor: "#fff",
+  white: "black",
+  background: "#f4f6fc",
+  black: "#778899",
+  greyish: "#d3d3d3",
+  tint: "#00008b",
+  brdcolor: "#dcdcdc",
+  blue: "#1F77D0",
+  yellow: "#FFDB00",
+};
 
-export default function HomeScreen() {
-
-  const [trending, setTrending] = useState([]);
-  const [upcoming, setUpcoming] = useState([]);
-  const [topRated, setTopRated] = useState([]);
-  const [loading, setLoading] = useState(true);
+const App = () => {
+  const route = useRoute();
   const navigation = useNavigation();
+  const [allSelected, setAllSelected] = useState(true);
+  const [greeting, setGreeting] = useState("");
+  const username = route.params?.username || "User";
 
+  useEffect(() => {
+    const currentHour = new Date().getHours();
+    if (currentHour < 12) {
+      setGreeting("Good Morning,");
+    } else if (currentHour < 18) {
+      setGreeting("Good Afternoon,");
+    } else if (currentHour < 21) {
+      setGreeting("Good Evening,");
+    } else {
+      setGreeting("Good Night,");
+    }
+  }, []);
 
-  useEffect(()=>{
-    getTrendingMovies();
-    getUpcomingMovies();
-    getTopRatedMovies();
-  },[]);
+  const handleAllPress = () => {
+    setAllSelected(true);
+  };
 
-  const getTrendingMovies = async ()=>{
-    const data = await fetchTrendingMovies();
-    console.log('got trending', data.results.length)
-    if(data && data.results) setTrending(data.results);
-    setLoading(false)
-  }
-  const getUpcomingMovies = async ()=>{
-    const data = await fetchUpcomingMovies();
-    console.log('got upcoming', data.results.length)
-    if(data && data.results) setUpcoming(data.results);
-  }
-  const getTopRatedMovies = async ()=>{
-    const data = await fetchTopRatedMovies();
-    console.log('got top rated', data.results.length)
-    if(data && data.results) setTopRated(data.results);
-  }
+  const handleCategoryPress = (category) => {
+    Alert.alert(
+      "Booking Confirmation",
+      `Are you sure for booking ${category}?`,
+      [
+        {
+          text: "No",
+          onPress: () => console.log("Booking cancelled"),
+          style: "cancel"
+        },
+        {
+          text: "Yes",
+          onPress: () => console.log(`${category} booked`),
+        }
+      ]
+    );
+  };
 
-
+  const handleFooterButtonPress = (buttonName) => {
+  };
 
   return (
-    <View className="flex-1 bg-green-900">
-      {/* search bar */}
-      <SafeAreaView className={ios? "-mb-2": "mb-3"}>
-        <StatusBar style="light" />
-        <View className="flex-row justify-between items-center mx-4">
-          <Bars3CenterLeftIcon size="30" strokeWidth={2} color="white" />
-          <Text 
-            className="text-white text-3xl font-bold">
-              <Text style={styles.text}>C</Text>inema
-              <Text style={styles.text}>Q</Text>
-          </Text>
-          <TouchableOpacity onPress={()=> navigation.navigate('Search')}>
-            <MagnifyingGlassIcon size="30" strokeWidth={2} color="white" />
+    <View style={{ flex: 1, backgroundColor: colors.themeColor }}>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.blue} />
+      <View style={{ backgroundColor: colors.themeColor, flex: 1 }}>
+        <View style={{ backgroundColor: colors.blue, width: '100%' }}>
+          <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View>
+              <Text style={{ color: colors.greyish, fontSize: 30 }}>
+                {greeting}
+              </Text>
+              <Text style={{ color: colors.white, fontSize: 30 }}>
+                {username}
+              </Text>
+              <Text style={{ color: colors.brdcolor, fontWeight: "bold", fontSize: 20, marginTop: 30 }}>
+                {"Let's Find the Best Parking Space!"}
+              </Text>
+            </View>
+            <Image
+              source={{
+                uri: "https://assets.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/2023/04/13/Picsart_23-04-13_11-05-49-499-1177641646.jpg",
+              }}
+              style={{ width: 80, height: 80, borderRadius: 50, marginRight: 40, marginBottom: 50 }}
+            />
+          </View>
+        </View>
+        <Text style={{ color: colors.white, fontSize: 20, marginTop: 20, marginLeft: 16, fontWeight: "bold" }}>
+          {"Slot Parking"}
+        </Text>
+        <View style={{ flexDirection: 'row', marginLeft: 16 }}>
+          <TouchableOpacity onPress={() => handleCategoryPress("A1")} style={[styles.parkingButton, { marginRight: 16 }]}>
+            <Text style={styles.parkingButtonText}>A1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleCategoryPress("A2")} style={styles.parkingButton}>
+            <Text style={styles.parkingButtonText}>A2</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleCategoryPress("A3")} style={[styles.parkingButton, { marginLeft: 16 }]}>
+            <Text style={styles.parkingButtonText}>A3</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
-      {
-        loading? (
-          <Loading />
-        ):(
-          <ScrollView 
-            showsVerticalScrollIndicator={false} 
-            contentContainerStyle={{paddingBottom: 10}}
-          >
+      </View>
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => handleFooterButtonPress("Home")}>
+          <MaterialCommunityIcons
+            name="home"
+            size={30}
+            style={{ color: colors.white }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleFooterButtonPress("Profile")}>
+          <MaterialCommunityIcons
+            name="book"
+            size={30}
+            style={{ color: colors.white }}
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
-            {/* Trending Movies Carousel */}
-            { trending.length>0 && <TrendingMovies data={trending} /> }
+const styles = StyleSheet.create({
+  parkingButton: {
+    backgroundColor: colors.yellow,
+    paddingVertical: 48,
+    paddingHorizontal: 48,
+    borderRadius: 20,
+    marginTop: 20
+  },
+  parkingButtonText: {
+    color: colors.white,
+    fontSize: 16,
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+});
 
-            {/* upcoming movies row */}
-            { upcoming.length>0 && <MovieList title="Upcoming" data={upcoming} /> }
-            
-
-            {/* top rated movies row */}
-            { topRated.length>0 && <MovieList title="Top Rated" data={topRated} /> }
-
-          </ScrollView>
-        )
-      }
-      
-  </View>
-      
-
-   
-  )
-}
+export default App;

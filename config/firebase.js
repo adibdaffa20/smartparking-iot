@@ -1,22 +1,23 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getAuth } from 'firebase/auth';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import {getAuth} from 'firebase/auth'
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDyn7z2VOoWVpNemdEZ_l4ai7i7wghd0ug",
-  authDomain: "finalproject-pemmob.firebaseapp.com",
-  projectId: "finalproject-pemmob",
-  storageBucket: "finalproject-pemmob.appspot.com",
-  messagingSenderId: "771428363743",
-  appId: "1:771428363743:web:c3cbc05d3d655266f8286a",
-  measurementId: "G-K10V0XJBH9"
+  apiKey: "AIzaSyBrmkj1t4Za4-VYeuGvUEZdOPoqIC_o2JM",
+  authDomain: "finalproject-iot-d7994.firebaseapp.com",
+  projectId: "finalproject-iot-d7994",
+  storageBucket: "finalproject-iot-d7994.appspot.com",
+  messagingSenderId: "148065638349",
+  appId: "1:148065638349:web:28f772b83ddb0a89615684",
+  measurementId: "G-XMTJN1QWTW"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-export const auth = getAuth(app);
+export { auth };
