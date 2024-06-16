@@ -66,6 +66,9 @@ const App = () => {
   };
 
   const handleFooterButtonPress = (buttonName) => {
+    if (buttonName === "Profile") {
+      navigation.navigate('Profile', { username });
+    }
   };
 
   return (
@@ -87,7 +90,7 @@ const App = () => {
             </View>
             <Image
               source={{
-                uri: "https://assets.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/2023/04/13/Picsart_23-04-13_11-05-49-499-1177641646.jpg",
+                uri: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2qsIm-TY-CbL48rzncMX_hiwJYhgYFDyzgrxM_iCn1enUenC0X5xsNJ-lEQ3ivRT_aIiM98XlZDxbxrGCfX13bllkAKvneU6rnVNlncQSdjg7fG082ghkO3jqWm7UnwrismbageOqQfj9jqW8OJOJ8Yqj1zqNSLVkTgF5UDHCTGeKW4kzGuaggQ/w400-h300/Telkom%20University%20Logo.png",
               }}
               style={{ width: 80, height: 80, borderRadius: 50, marginRight: 40, marginBottom: 50 }}
             />
@@ -118,7 +121,7 @@ const App = () => {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleFooterButtonPress("Profile")}>
           <MaterialCommunityIcons
-            name="book"
+            name="account"
             size={30}
             style={{ color: colors.white }}
           />

@@ -11,7 +11,7 @@ export default function WelcomeScreen() {
         <View className="flex-1 flex justify-around my-4">
             <Text 
                 className="text-yellow-400 font-bold text-3xl text-center">
-                SMART PARKING
+                MO PARKING
             </Text>
             <View className="flex-row justify-center">
                 <Image source={require("../assets/images/smartparking.png")}
