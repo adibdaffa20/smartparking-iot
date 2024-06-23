@@ -47,7 +47,7 @@ const Profile = ({ route }) => {
       <View style={styles.aboutContainer}>
         <Text style={styles.aboutHeader}>About</Text>
         <Text style={styles.aboutText}>
-          Hello, my name is {username}. Welcome to my profile! I am passionate about finding the best parking spaces and making the most of my time. I enjoy helping others and providing solutions that make life easier.
+          Hello, my name is {username}. Welcome to my profile! Aplikasi ini digunakan untuk memudahkan anda mencari slot parkir dan mem-booking slot parkir yang tersedia. Internet of Things, 2024.
         </Text>
       </View>
     </View>
