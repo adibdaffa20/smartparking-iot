@@ -11,7 +11,7 @@ const colors = {
   greyish: "#778899",
   tint: "#00008b",
   brdcolor: "#dcdcdc",
-  blue: "#1F77D0",
+  blue: "#09419c",
   yellow: "#FFDB00",
 };
 

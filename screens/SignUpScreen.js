@@ -67,9 +67,9 @@ export default function SignUpScreen() {
         <View className="flex-row justify-start">
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            className="bg-yellow-400 p-2 rounded-tr-2xl rounded-bl-2xl ml-4"
+            className="p-2 rounded-tr-2xl rounded-bl-2xl ml-4"
           >
-            <ArrowLeftIcon size="20" color="black" />
+            <ArrowLeftIcon size="25" color="white" />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -79,33 +79,33 @@ export default function SignUpScreen() {
       </View>
       <View className="flex-1 px-8 pt-8">
         <View className="form space-y-2">
-          <Text className="text-black-700 ml-4">Username</Text>
+          <Text className="text-white ml-4">Username</Text>
           <TextInput
             className="p-4 bg-gray-100 text-gray-900 rounded-2xl mb-3"
             placeholder="Username"
             value={username}
             onChangeText={value => setUsername(value)}
           />
-          <Text className="text-black-700 ml-4">Email Address</Text>
+          <Text className="text-white ml-4">Email Address</Text>
           <TextInput
             className="p-4 bg-gray-100 text-gray-900 rounded-2xl mb-3"
             placeholder="Email"
             value={email}
             onChangeText={value => setEmail(value)}
           />
-          <Text className="text-black-700 ml-4">Password</Text>
+          <Text className="text-white ml-4">Password</Text>
           <TextInput
-            className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-7"
+            className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-14"
             secureTextEntry
             placeholder="Password"
             value={password}
             onChangeText={value => setPassword(value)}
           />
-          <TouchableOpacity onPress={handleSubmit} className="py-3 bg-yellow-400 rounded-xl">
+          <TouchableOpacity onPress={handleSubmit} className="py-3 bg-yellow-400 rounded-xl mb-3">
             <Text className="text-xl font-bold text-center text-black">Sign Up</Text>
           </TouchableOpacity>
           <View className="flex-row justify-center mt-7">
-            <Text className="text-black-500 font-semibold">Already have an account?</Text>
+            <Text className="text-white font-semibold">Already have an account?</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text className="font-semibold text-yellow-500"> Login</Text>
             </TouchableOpacity>

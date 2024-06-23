@@ -10,6 +10,21 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { getDatabase, ref, set, onValue } from "firebase/database";
+import { initializeApp } from "firebase/app";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyATLNyMeI0UL466kKqfRSJWUFOXRnwfV0Q",
+  authDomain: "smartparking-f8be2.firebaseapp.com",
+  projectId: "smartparking-f8be2",
+  storageBucket: "smartparking-f8be2.appspot.com",
+  messagingSenderId: "719552682532",
+  appId: "1:719552682532:web:08cf512e67d3af180b16b1",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 const colors = {
   themeColor: "#fff",
@@ -19,8 +34,9 @@ const colors = {
   greyish: "#d3d3d3",
   tint: "#00008b",
   brdcolor: "#dcdcdc",
-  blue: "#1F77D0",
+  blue: "#09419c",
   yellow: "#FFDB00",
+  red: "#FF0000"
 };
 
 const App = () => {
@@ -28,38 +44,98 @@ const App = () => {
   const navigation = useNavigation();
   const [allSelected, setAllSelected] = useState(true);
   const [greeting, setGreeting] = useState("");
+  const [slots, setSlots] = useState({
+    A1: colors.yellow,
+    A2: colors.yellow,
+    A3: colors.yellow
+  });
   const username = route.params?.username || "User";
 
   useEffect(() => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
       setGreeting("Good Morning,");
-    } else if (currentHour < 18) {
+    } else if (currentHour < 18) {  
       setGreeting("Good Afternoon,");
     } else if (currentHour < 21) {
       setGreeting("Good Evening,");
     } else {
       setGreeting("Good Night,");
     }
-  }, []);
 
-  const handleAllPress = () => {
-    setAllSelected(true);
-  };
+    // Listen for changes in the Firebase Realtime Database
+    const slotsRef = ref(db, 'slots/');
+    onValue(slotsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setSlots({
+          A1: data.A1?.status === "occupied" ? colors.red : colors.yellow,
+          A2: data.A2?.status === "occupied" ? colors.red : colors.yellow,
+          A3: data.A3?.status === "occupied" ? colors.red : colors.yellow
+        });
+      }
+    });
+  }, []);
 
   const handleCategoryPress = (category) => {
     Alert.alert(
       "Booking Confirmation",
-      `Are you sure for booking ${category}?`,
+      `What do you want to do with ${category}?`,
       [
         {
-          text: "No",
-          onPress: () => console.log("Booking cancelled"),
+          text: "Cancel Booking",
+          onPress: async () => {
+            console.log(`Booking for ${category} cancelled`);
+            try {
+              // Update the booking status in Firebase
+              await set(ref(db, 'slots/' + category), {
+                status: "available",
+                bookedBy: null,
+                timestamp: null
+              });
+
+              // Set the servo state to open in Firebase
+              await set(ref(db, 'servo/' + category), {
+                state: "open"
+              });
+
+              // Update the local state to reflect the cancellation
+              setSlots((prevSlots) => ({
+                ...prevSlots,
+                [category]: colors.yellow
+              }));
+            } catch (e) {
+              console.error("Error cancelling booking: ", e);
+            }
+          },
           style: "cancel"
         },
         {
-          text: "Yes",
-          onPress: () => console.log(`${category} booked`),
+          text: "Book Slot",
+          onPress: async () => {
+            console.log(`${category} booked`);
+            try {
+              // Update the booking status in Firebase
+              await set(ref(db, 'slots/' + category), {
+                status: "occupied",
+                bookedBy: username,
+                timestamp: new Date().toISOString()
+              });
+
+              // Set the servo state to closed in Firebase
+              await set(ref(db, 'servo/' + category), {
+                state: "closed"
+              });
+
+              // Update the local state to reflect the booking
+              setSlots((prevSlots) => ({
+                ...prevSlots,
+                [category]: colors.red
+              }));
+            } catch (e) {
+              console.error("Error booking slot: ", e);
+            }
+          }
         }
       ]
     );
@@ -100,13 +176,13 @@ const App = () => {
           {"Slot Parking"}
         </Text>
         <View style={{ flexDirection: 'row', marginLeft: 16 }}>
-          <TouchableOpacity onPress={() => handleCategoryPress("A1")} style={[styles.parkingButton, { marginRight: 16 }]}>
+          <TouchableOpacity onPress={() => handleCategoryPress("A1")} style={[styles.parkingButton, { marginRight: 16, backgroundColor: slots.A1 }]}>
             <Text style={styles.parkingButtonText}>A1</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleCategoryPress("A2")} style={styles.parkingButton}>
+          <TouchableOpacity onPress={() => handleCategoryPress("A2")} style={[styles.parkingButton, { backgroundColor: slots.A2 }]}>
             <Text style={styles.parkingButtonText}>A2</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleCategoryPress("A3")} style={[styles.parkingButton, { marginLeft: 16 }]}>
+          <TouchableOpacity onPress={() => handleCategoryPress("A3")} style={[styles.parkingButton, { marginLeft: 16, backgroundColor: slots.A3 }]}>
             <Text style={styles.parkingButtonText}>A3</Text>
           </TouchableOpacity>
         </View>
@@ -133,7 +209,6 @@ const App = () => {
 
 const styles = StyleSheet.create({
   parkingButton: {
-    backgroundColor: colors.yellow,
     paddingVertical: 48,
     paddingHorizontal: 48,
     borderRadius: 20,

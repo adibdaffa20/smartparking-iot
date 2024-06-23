@@ -1,22 +1,37 @@
-import { View, Text } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { useState, useEffect, createContext, useContext } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-export default function useAuth() {
-    const [user, setUser] = useState(null);
+// Create a context
+const AuthContext = createContext();
 
-    useEffect(()=>{
-        const unsub = onAuthStateChanged(auth, user=>{
-            console.log('got user: ', user);
-            if(user){
-                setUser(user);
-            }else{
-                setUser(null);
-            }
-        });
-    return unsub;
-},[])
+// Provide the auth context to the rest of the app
+export function AuthProvider({ children }) {
+  const auth = getAuth();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-return { user }
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, loading }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+}
+
+// Use the auth context in components
+export function useAuth() {
+  return useContext(AuthContext);
 }
